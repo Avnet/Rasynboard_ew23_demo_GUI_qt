@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>avnet-info.png</file>
+    </qresource>
+</RCC>
