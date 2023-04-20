@@ -38,8 +38,6 @@ class MainWindow(QtWidgets.QWidget):
 
         self.__active = False
 
-        
-
     def onSetActive(self, active):
         self.__active = active
         self.__control.setActive(active)

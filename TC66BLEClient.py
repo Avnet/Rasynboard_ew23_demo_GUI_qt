@@ -23,10 +23,14 @@ class TC66BLEClient(QObject):
         super().__init__()
         
         # Create bluetooth client
-        self.client = QBleakClient("BT24-M", "0000ffe1-0000-1000-8000-00805f9b34fb", "0000ffe1-0000-1000-8000-00805f9b34fb")
+        self.client = QBleakClient("BT24-M")
+        self.rxUUID = "0000ffe1-0000-1000-8000-00805f9b34fb"
+        
         self.client.connected.connect(self.connected)
         self.client.disconnected.connect(self.disconnected)
+        self.client.deviceNotFound.connect(self.onDeviceNotFound)
         self.client.dataReceived.connect(self.onDataReceived)
+        self.client.scanError.connect(self.onDeviceNotFound)
 
         # Request timer
         self.requestTimer = None
@@ -38,7 +42,7 @@ class TC66BLEClient(QObject):
         # Single shot timer to connect once event loop starts
         QTimer.singleShot(0, self.client.connect)
 
-    def onDataReceived(self, data):
+    def onDataReceived(self, _, data):
         self.dataReceived.emit(self.decode(data))
 
     def append(self, data):
@@ -99,11 +103,12 @@ class TC66BLEClient(QObject):
     async def requestMeasurements(self):
         self.dataBuffer = bytearray()
         self.bufferIdx = 0
-        await self.client.write("bgetva\r\n".encode())
+        await self.client.write(self.rxUUID, "bgetva\r\n".encode())
     
     # Slot called when device connected
-    def connected(self):
-        print("Client connected.")
+    @qasync.asyncSlot()
+    async def connected(self):
+        await self.client.attachHandle(self.rxUUID, self.onDataReceived)
         self.requestTimer = QTimer()
         self.requestTimer.setInterval(1000)
         self.requestTimer.timeout.connect(self.requestMeasurements)
@@ -111,4 +116,9 @@ class TC66BLEClient(QObject):
 
     # Attempt to reconnect after disconnection
     def disconnected(self):
+        if self.requestTimer:
+            self.requestTimer.stop()
+        QTimer.singleShot(2000, self.client.connect)
+    
+    def onDeviceNotFound(self):
         QTimer.singleShot(2000, self.client.connect)
