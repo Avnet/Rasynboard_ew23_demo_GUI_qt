@@ -24,7 +24,7 @@ Quick the application by pressing the escape key.
 The Rasynboard commands can be simulated by using the following keys:
 |Key|Command|
 |---|-------|
-|Up||"Up"|
+|Up|"Up"|
 |Down|"Down"|
 |Right|"Next"|
 |Left|"Back"|
