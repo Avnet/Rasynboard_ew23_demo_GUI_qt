@@ -6,6 +6,7 @@ from mainwindow import MainWindow
 from powerwindow import PowerWindow
 from communicator import RasynboardCommunicator
 from TC66BLEClient import TC66BLEClient
+from TC66SerialClient import TC66SerialClient
 from qbleakclient import QBleakClient
 
 import asyncio
@@ -46,8 +47,16 @@ class Application(QApplication):
         self.dataBuffer = bytearray()
         self.bufferIdx = 0
 
+
         # Create tc66 client
-        self.tc66Client = TC66BLEClient()
+        if len(sys.argv) > 1:
+            if sys.argv[1] == "serial":
+                self.tc66Client = TC66SerialClient()
+            else:
+                self.tc66Client = TC66BLEClient()
+        else:
+            self.tc66Client = TC66BLEClient()
+
         self.tc66Client.dataReceived.connect(self.onTC66DataReceived)
 
     @qasync.asyncSlot()
