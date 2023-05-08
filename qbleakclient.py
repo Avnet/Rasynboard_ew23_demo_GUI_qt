@@ -82,9 +82,12 @@ class QBleakClient(QObject):
             self.state = State.Connected
             self.connected.emit()
         except BaseException as exception:
+            print(f"Connection Error: {exception}")
+            self.state = State.Disconnected
             self.disconnected.emit()
 
     async def stop(self):
+        print("Stopping...")
         self.state = State.Disconnected
         try:
             await self.client.disconnect()
@@ -104,7 +107,7 @@ class QBleakClient(QObject):
     def _handle_read(self, _: int, data: bytearray) -> None:
         self.dataReceived.emit(data)
 
-    def __del__(self):
+    async def __del__(self):
         print("I'm deconstructing")
-        self.client.disconnect()
+        await self.client.disconnect()
         

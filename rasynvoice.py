@@ -140,13 +140,17 @@ class Application(QApplication):
                 self.powerWindow.show()
                 self.mainWindow.hide()
             elif event.key() == Qt.Key_Escape:
-                exit(0)
+                self.exit()
 
         # Return
         return ret     
 
+app:Application = None
+loop = None
 # Application entry point
 def main():
+    global app
+
     # Create application
     app = Application(sys.argv)
     loop = qasync.QEventLoop(app)
@@ -156,8 +160,13 @@ def main():
     # Start event loop
     with loop:
         loop.run_forever()
+    print("All done....")
+    asyncio.run(app.communicator.client.stop())
+    asyncio.run(app.tc66Client.client.stop())
 
 def shutdown(loop):
+    asyncio.get_running_loop().run_until_complete(app.communicator.client.stop())
+    asyncio.get_running_loop().run_until_complete(app.tc66Client.client.stop())
     for task in asyncio.Task.all_tasks():
         task.cancel()
 

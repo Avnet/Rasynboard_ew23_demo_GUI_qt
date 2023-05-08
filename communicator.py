@@ -55,9 +55,9 @@ class RasynboardCommunicator(QObject):
     def onDisconnected(self):
         print('Rasynboard disconnected...')
         self.disconnected.emit()
-        QTimer.singleShot(2000, self.client.connect)        
+        QTimer.singleShot(4000, self.client.connect)        
 
     def onDeviceNotFound(self):
         print(f'Rasynboard not found.')
-        QTimer.singleShot(2000, self.client.connect)
+        QTimer.singleShot(4000, self.client.connect)
         

@@ -118,7 +118,9 @@ class TC66BLEClient(QObject):
     def disconnected(self):
         if self.requestTimer:
             self.requestTimer.stop()
-        QTimer.singleShot(2000, self.client.connect)
+        QTimer.singleShot(5000, self.client.connect)
+        print("TC66 Disconnected.")
     
     def onDeviceNotFound(self):
-        QTimer.singleShot(2000, self.client.connect)
+        QTimer.singleShot(5000, self.client.connect)
+        print("TC66 Not Found.")
