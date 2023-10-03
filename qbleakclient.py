@@ -52,9 +52,13 @@ class QBleakClient(QObject):
 
             # Loop through found devices
             for device in self.devices:
-                if self.deviceName in device.name:
-                    self.device = device
-                    break
+                print(f"Device: {device}")
+                if hasattr(device, "name"):
+                    if not device.name:
+                        continue
+                    if self.deviceName in device.name:
+                        self.device = device
+                        break
             
             # If still not round return
             if not self.device:
@@ -70,10 +74,16 @@ class QBleakClient(QObject):
         await self.start()
 
     def getCharacteristic(self, serviceUUID, characteristicUUID):
-        return self.client.services.get_service(serviceUUID).get_characteristic(characteristicUUID)
-    
+        try:
+            return self.client.services.get_service(serviceUUID).get_characteristic(characteristicUUID)
+        except BaseException as exception:
+            print(f"BLE Connect Error: {exception}")
+
     async def attachHandle(self, handle, callback):
-        await self.client.start_notify(handle, callback)
+        try:
+            await self.client.start_notify(handle, callback)
+        except:
+            print(f"Error connecting to RASynBoard")
 
     # Attempt to establish connection
     async def start(self):

@@ -4,6 +4,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, QTimer, QVariant
 
 import qasync
 
+import config
 from tc import *
 
 class TC66SerialClient(QObject):
@@ -23,9 +24,12 @@ class TC66SerialClient(QObject):
     # Attempt to connect to TC66
     @qasync.asyncSlot()
     async def connect(self):
+
         # If using serial port, attempt connection
        
-        self.client = TcSerialInterface("/dev/ttyACM0", 3)
+        print('Trying to connect to', config.comPort)
+        self.client = TcSerialInterface(config.comPort, 3)
+
         try:
             self.client.connect()
         except Exception as e:

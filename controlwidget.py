@@ -151,11 +151,11 @@ class ControlWidget(QtWidgets.QWidget):
         
         # Paint the arc
         painter.drawArc(
-            (self.__arcLineWidth + self.__innerGapWidth * 2) / 2,
-            (self.__arcLineWidth + self.__innerGapWidth  * 2) / 2,
-            self.width() - self.__arcLineWidth - (self.__innerGapWidth * 2),
-            self.width() - self.__arcLineWidth - (self.__innerGapWidth * 2),
-            start * 16, 
+            int((self.__arcLineWidth + self.__innerGapWidth * 2) / 2),
+            int((self.__arcLineWidth + self.__innerGapWidth  * 2) / 2),
+            int(self.width() - self.__arcLineWidth - (self.__innerGapWidth * 2)),
+            int(self.width() - self.__arcLineWidth - (self.__innerGapWidth * 2)),
+            int(start * 16), 
             90 * 16
         )
 
@@ -178,7 +178,7 @@ class ControlWidget(QtWidgets.QWidget):
         size = self.width() + arcRadius
         
         offset = (self.width() - arcRadius ) / 4
-        painter.drawEllipse(offset, offset, size/2, size/2)
+        painter.drawEllipse(int(offset), int(offset), int(size/2), int(size/2))
 
     # Draw Text
     def drawText(self, painter, x, y, height, width, color, size, text):
@@ -234,8 +234,8 @@ class ControlWidget(QtWidgets.QWidget):
         botLeftX = midPoint + radius * math.cos(math.radians(-45+180))
         botLeftY = midPoint + radius * math.sin(math.radians(-45+180))
 
-        painter.drawLine(upperLeftX, upperLeftY, botRightX, botRightY)
-        painter.drawLine(rightRightX, upperRightY, botLeftX, botLeftY)
+        painter.drawLine(int(upperLeftX), int(upperLeftY), int(botRightX),int(botRightY))
+        painter.drawLine(int(rightRightX), int(upperRightY), int(botLeftX), int(botLeftY))
 
     # Draw up control
     def drawUpButton(self, painter):

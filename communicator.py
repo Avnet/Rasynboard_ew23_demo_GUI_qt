@@ -1,6 +1,8 @@
 # Bluetooth
 # PyQt Imports
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, QVariant, QThread, QTimer
+
+import config
 from qbleakclient import QBleakClient
 import json
 
@@ -21,7 +23,7 @@ class RasynboardCommunicator(QObject):
         self.rxUUID = "deadbeef-0123-4567-89ab-cdef0003daf1"
         
         # Create bluetooth client
-        self.client = QBleakClient("DA16600-")
+        self.client = QBleakClient(config.rasynBoardName)
 
         self.client.connected.connect(self.onConnected)
         self.client.disconnected.connect(self.onDisconnected)
