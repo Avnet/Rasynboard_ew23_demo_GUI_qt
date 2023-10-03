@@ -1,2 +1,10 @@
 __pycache__/
 .vscode/
+*.toc
+*.pyc
+*.pkg
+*.xml
+*.pyz
+build/*
+*.idea
+dist/*
