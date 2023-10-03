@@ -1,5 +1,4 @@
 #!/bin/python3
-
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt, QEvent, QTimer
 from mainwindow import MainWindow
@@ -10,12 +9,12 @@ from TC66SerialClient import TC66SerialClient
 from qbleakclient import QBleakClient
 
 import asyncio
-
 import sys
+import argparse
 import signal
 import functools
-
 import qasync
+import config
 
 # Application
 class Application(QApplication):
@@ -47,15 +46,12 @@ class Application(QApplication):
         self.dataBuffer = bytearray()
         self.bufferIdx = 0
 
-
-        # Create tc66 client
-        if len(sys.argv) > 1:
-            if sys.argv[1] == "serial":
-                self.tc66Client = TC66SerialClient()
-            else:
-                self.tc66Client = TC66BLEClient()
-        else:
+        if config.pwrSource == 'serial':
+            self.tc66Client = TC66SerialClient()
+        elif config.pwrSource == 'ble':
             self.tc66Client = TC66BLEClient()
+        else:
+            self.tc66Client = TC66SerialClient()
 
         self.tc66Client.dataReceived.connect(self.onTC66DataReceived)
 
@@ -151,11 +147,37 @@ loop = None
 def main():
     global app
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--pwrSrc", help="Define source for TC66 power measurement <serial | BLE")
+    parser.add_argument("-n", "--bleName", help="Define the BLE advertisement name")
+    parser.add_argument("-c", "--comPort", type=str, help="Define the microUSB TC66C Com Port")
+
+    args = parser.parse_args()
+
+    # Set defaults if arguments are not set
+    if (args.pwrSrc):
+        config.pwrSource = args.pwrSrc
+    else:
+        config.pwrSource = "serial"
+        
+    if (args.bleName):
+        config.rasynBoardName = args.bleName
+    else:
+        config.rasynBoardName = "DA16600-"
+    if (args.comPort):
+        config.comPort = args.comPort
+    else:
+        config.comPort = "com5"
+
+    print('TC66C Data Source is ', config.pwrSource)
+    print('BLE Name is ', config.rasynBoardName)
+    print('TC66C com port = ', config.comPort)
+
     # Create application
     app = Application(sys.argv)
     loop = qasync.QEventLoop(app)
-    loop.add_signal_handler(signal.SIGHUP, functools.partial(shutdown, loop))
-    loop.add_signal_handler(signal.SIGTERM, functools.partial(shutdown, loop))
+    #loop.add_signal_handler(signal.SIGHUP, functools.partial(shutdown, loop))
+    #loop.add_signal_handler(signal.SIGTERM, functools.partial(shutdown, loop))
 
     # Start event loop
     with loop:
